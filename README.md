@@ -1,15 +1,26 @@
 # batchful
-A simple and easy-to use GUI batch directory organizer. 
+A simple and easy-to use directory organizer. 
 
-No installation needed -- just run the `.bat` file in the desired folder.
+No installation needed -- just run `batchful.sh` from terminal.
 
 ## Usage
-Paste the program in the directory you wish to organize and run it.
+Run the file from terminal using `$ ./batchful.sh` with the desired organization method and directory.
 
 ### Configuration
 There are currently two implemented methods of organization *(more coming soon -- see below)*: 
-1. By file extension: creates a directory for every filetype and sorts the files accordingly. 
-2. By file name: creates a folder for every single file name and sorts the files into them.
+- By file extension: creates a directory for every filetype and sorts the files accordingly. 
+- By file name: creates a folder for every single file name and sorts the files into them.
+
+### Syntax
+` $ ./batchful.sh [OPTION] [DIRECTORY]`
+
+[--name, -n] Sort by file name
+
+[--type, -t] Sort by file extension
+
+[--github, -g] Link to GitHub
+
+[--help, -h] Prints this help
 
 ## Coming Soon
 - The option to sort files by regex: finds a specific phrase anywhere in the file name

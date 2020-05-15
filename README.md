@@ -17,7 +17,7 @@ There are currently two implemented methods of organization *(more coming soon -
 
 [--name, -n] Sort by file name
 
-[--type, -t] Sort by file extension
+[--extension, -e] Sort by file extension
 
 [--github, -g] Link to GitHub
 

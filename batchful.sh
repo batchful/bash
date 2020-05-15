@@ -6,21 +6,73 @@
 #  | |_) || (_| || |_| (__ | | | ||  _|| |_| || |
 #  |_.__/  \__,_| \__|\___||_| |_||_|   \__,_||_|
 
-if [[ $1 = "--name" ]] || [[ $1 = "-n" ]]; then # by file name
+# by file name
+if [[ $1 = "--name" ]] || [[ $1 = "-n" ]]; then
 if [ -d "$2" ]; then # directory operand validity check
-  echo \'$2\' will be sorted by file name. # need to add actual code
+  read -r -p "'$2' will be sorted by file name. Continue? [Y/n] " response
+    if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]] || [[ $response == "" ]]; then
+      cd $2
+      for file in $2/*; do
+        [ ! -d "$file" ] || continue # skip directories
+          pathless="${file##*/}" # cut path
+          if [[ "$pathless" = "${pathless%%.*}" ]]; then # if file is extensionless
+            if [[ ! -a "$2/temp" ]]; then
+              mkdir temp # create directory if doesn't exist
+            fi
+            mv "$pathless" ./temp
+            mkdir "$pathless"
+            mv ./temp/"$pathless" "$pathless" # move extensionless directly
+            rmdir temp
+            continue
+          fi
+          if [[ ! -a "./${pathless%%.*}" ]]; then
+            mkdir "${pathless%%.*}" # create directory if doesn't exist
+          fi
+          mv "$pathless" ./"${pathless%%.*}" # sort by name
+      done
+      echo
+      echo Folder sorted succesfully.
+    elif [[ $response =~ ^([nN][oO]|[nN])$ ]]; then
+      echo Aborting...
+    else
+      echo
+      echo Invalid response \'$response\' -- Aborting...
+    fi
 else
   echo batchful: invalid directory operand \'$2\'
   echo Try \'./batchful.sh --help\' for more information.
-  fi
+fi
 
-elif [[ $1 = "--type" ]] || [[ $1 = "-t" ]]; then # by file extension
+# by file extension
+elif [[ $1 = "--extension" ]] || [[ $1 = "-e" ]]; then
   if [ -d "$2" ]; then # directory operand validity check
-    echo \'$2\' will be sorted by file extension. # need to add actual code
-  else
-    echo batchful: invalid directory operand \'$2\'
-    echo Try \'./batchful.sh --help\' for more information.
-  fi
+    read -r -p "'$2' will be sorted by file extension. Continue? [Y/n] " response
+      if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]] || [[ $response == "" ]]; then
+        cd $2
+        for extful in $2/*.*; do # skip extensionless
+          [ ! -d "$extful" ] || continue # skip directories
+            if [[ ! -a "./${extful#*.}" ]]; then mkdir "${extful#*.}" # create directory if doesn't exist
+            fi
+            mv "$extful" ./"${extful#*.}" # sort by extension
+        done
+        if [[ ! -d "$2/no-extension" ]]; then mkdir no-extension # create extless directory if doesn't exist
+        fi
+        for extless in $2/*; do
+          [ ! -d "$extless" ] || continue # skip directories
+            mv "$extless" ./no-extension # sort extensionless
+        done
+        echo
+        echo Folder sorted succesfully.
+      elif [[ $response =~ ^([nN][oO]|[nN])$ ]]; then
+        echo Aborting...
+      else
+        echo
+        echo Invalid response \'$response\' -- Aborting...
+      fi
+else
+  echo batchful: invalid directory operand \'$2\'
+  echo Try \'./batchful.sh --help\' for more information.
+fi
 
 # phrase
 
@@ -38,12 +90,12 @@ elif [[ $1 = "--github" ]] || [[ $1 = "-g" ]]; then # link to GitHub
     fi
 
 elif [[ $1 = "--help" ]] || [[ $1 = "-h" ]]; then # help
-  echo batchful v0.2.0-alpha
+  echo batchful bash-v0.1.0-beta
   echo Usage: ./batchful.sh [OPTION] [DIRECTORY]
   echo
   echo Options:
   echo \ \ \ [--name, -n] Sort by file name
-  echo \ \ \ [--type, -t] Sort by file extension
+  echo \ \ \ [--extension, -e] Sort by file extension
   echo \ \ \ [--github, -g] Link to GitHub
   echo \ \ \ [--help, -h] Prints this help
 

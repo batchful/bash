@@ -11,24 +11,26 @@ if [[ $1 = "--name" ]] || [[ $1 = "-n" ]]; then
 if [ -d "$2" ]; then # directory operand validity check
   read -r -p "'$2' will be sorted by file name. Continue? [Y/n] " response
     if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]] || [[ $response == "" ]]; then
-      cd $2
-      for file in $2/*; do
+      cd "$2"
+      for file in "$2"/*; do
         [ ! -d "$file" ] || continue # skip directories
           pathless="${file##*/}" # cut path
-          if [[ "$pathless" = "${pathless%%.*}" ]]; then # if file is extensionless
-            if [[ ! -a "$2/temp" ]]; then
+          extless="${pathless%%.*}" # cut extension
+          parless="./${extless%% (*)}"
+          if [[ "$pathless" = "$extless" ]]; then # if file is extensionless
+            if [[ ! -a "'$2'/temp" ]]; then
               mkdir temp # create directory if doesn't exist
             fi
-            mv "$pathless" ./temp
-            mkdir "$pathless"
-            mv ./temp/"$pathless" "$pathless" # move extensionless directly
+            mv "$extless" ./temp
+            mkdir "$parless"
+            mv ./temp/"$extless" "$parless" # move extensionless directly
             rmdir temp
             continue
           fi
-          if [[ ! -a "./${pathless%%.*}" ]]; then
-            mkdir "${pathless%%.*}" # create directory if doesn't exist
+          if [[ ! -a "./$parless" ]]; then
+            mkdir "$parless" # create directory if doesn't exist
           fi
-          mv "$pathless" ./"${pathless%%.*}" # sort by name
+          mv "$file" ./"$parless" # sort by name
       done
       echo
       echo Folder sorted succesfully.
@@ -48,16 +50,16 @@ elif [[ $1 = "--extension" ]] || [[ $1 = "-e" ]]; then
   if [ -d "$2" ]; then # directory operand validity check
     read -r -p "'$2' will be sorted by file extension. Continue? [Y/n] " response
       if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]] || [[ $response == "" ]]; then
-        cd $2
-        for extful in $2/*.*; do # skip extensionless
+        cd "$2"
+        for extful in "$2"/*.*; do # skip extensionless
           [ ! -d "$extful" ] || continue # skip directories
             if [[ ! -a "./${extful#*.}" ]]; then mkdir "${extful#*.}" # create directory if doesn't exist
             fi
             mv "$extful" ./"${extful#*.}" # sort by extension
         done
-        if [[ ! -d "$2/no-extension" ]]; then mkdir no-extension # create extless directory if doesn't exist
+        if [[ ! -d "'$2'/no-extension" ]]; then mkdir no-extension # create extless directory if doesn't exist
         fi
-        for extless in $2/*; do
+        for extless in "$2"/*; do
           [ ! -d "$extless" ] || continue # skip directories
             mv "$extless" ./no-extension # sort extensionless
         done

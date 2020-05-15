@@ -18,13 +18,13 @@ if [ -d "$2" ]; then # directory operand validity check
           extless="${pathless%%.*}" # cut extension
           parless="./${extless%% (*)}"
           if [[ "$pathless" = "$extless" ]]; then # if file is extensionless
-            if [[ ! -a "'$2'/temp" ]]; then
-              mkdir temp # create directory if doesn't exist
+            mkdir "batchful-bash-temp-$extless" # create temp folder
+            mv "$extless" ./"batchful-bash-temp-$extless"
+            if [[ ! -a "./$parless" ]]; then
+              mkdir "$parless" # create directory if doesn't exist
             fi
-            mv "$extless" ./temp
-            mkdir "$parless"
-            mv ./temp/"$extless" "$parless" # move extensionless directly
-            rmdir temp
+            mv ./"batchful-bash-temp-$extless"/"$extless" "$parless" # move extensionless directly
+            rmdir "batchful-bash-temp-$extless"
             continue
           fi
           if [[ ! -a "./$parless" ]]; then

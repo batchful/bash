@@ -44,6 +44,5 @@ There are currently two implemented methods of organization *(more coming soon -
 
 ## Coming Soon
 - The option to sort files by regex: finds a specific phrase anywhere in the file name
-- A GUI version of the program is in early development, but is low on our list
 - The ability to search sub-folders for items and rename files if names clash
 - Thinking about an option to toggle case-sensitivity

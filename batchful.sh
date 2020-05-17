@@ -6,11 +6,19 @@
 #  | |_) || (_| || |_| (__ | | | ||  _|| |_| || |
 #  |_.__/  \__,_| \__|\___||_| |_||_|   \__,_||_|
 
+# preconfiguration
+
+## forcing
+FORCED=0
+if [[ $3 == "--force" ]] || [[ $3 == "-f" ]]; then FORCED=1
+fi
+
 # by file name
 if [[ $1 = "--name" ]] || [[ $1 = "-n" ]]; then
 if [ -d "$2" ]; then # directory operand validity check
-  read -r -p "'$2' will be sorted by file name. Continue? [Y/n] " response
-    if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]] || [[ $response == "" ]]; then
+if [[ $FORCED -eq 0 ]]; then read -r -p "'$2' will be sorted by file name. Continue? [Y/n] " response
+fi
+    if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]] || [[ $response == "" ]] || [[ $FORCED -eq 1 ]]; then
       cd "$2"
       for file in "$2"/*; do
         [ ! -d "$file" ] || continue # skip directories
@@ -48,8 +56,9 @@ fi
 # by file extension
 elif [[ $1 = "--extension" ]] || [[ $1 = "-e" ]]; then
   if [ -d "$2" ]; then # directory operand validity check
-    read -r -p "'$2' will be sorted by file extension. Continue? [Y/n] " response
-      if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]] || [[ $response == "" ]]; then
+if [[ $FORCED -eq 0 ]]; then read -r -p "'$2' will be sorted by file extension. Continue? [Y/n] " response
+fi
+      if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]] || [[ $response == "" ]] || [[ $FORCED -eq 1 ]]; then
         cd "$2"
         for extful in "$2"/*.*; do # skip extensionless
           [ ! -d "$extful" ] || continue # skip directories
@@ -78,7 +87,8 @@ fi
 
 # phrase
 
-elif [[ $1 = "--github" ]] || [[ $1 = "-g" ]]; then # link to GitHub
+# link to GitHub
+elif [[ $1 = "--github" ]] || [[ $1 = "-g" ]]; then
   echo batchful: a simple directory organizer
   echo Made by 3174N with help from SFR-git
   read -r -p "Open GitHub repo? [Y/n] " response
@@ -91,15 +101,25 @@ elif [[ $1 = "--github" ]] || [[ $1 = "-g" ]]; then # link to GitHub
       echo Invalid response \'$response\' -- Aborting...
     fi
 
-elif [[ $1 = "--help" ]] || [[ $1 = "-h" ]]; then # help
+# help
+elif [[ $1 = "--help" ]] || [[ $1 = "-h" ]]; then
   echo batchful bash-v0.1.0-beta
-  echo Usage: ./batchful.sh [OPTION] [DIRECTORY]
+  echo Usage: ./batchful.sh [OPTION] [DIRECTORY] [EXTRAOPTION] [EXTRAOPTION] ...
   echo
   echo Options:
   echo \ \ \ [--name, -n] Sort by file name
   echo \ \ \ [--extension, -e] Sort by file extension
   echo \ \ \ [--github, -g] Link to GitHub
   echo \ \ \ [--help, -h] Prints this help
+  echo
+  echo Extra options:
+  echo \ \ \ [--force, -f] Skip confirmation prompts
+  echo
+  echo Run without parameters or open from file manager to use GUI.
+
+# open GUI
+elif [[ $1 = "" ]]; then
+  echo placeholder GUI
 
 else
   echo batchful: unrecognised option \'$1\'

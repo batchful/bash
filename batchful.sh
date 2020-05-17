@@ -8,6 +8,9 @@
 
 # preconfiguration
 
+## version
+ver="bash-v0.2.0-alpha"
+
 ## forcing
 FORCED=0
 if [[ $3 == "--force" ]] || [[ $3 == "-f" ]]; then FORCED=1
@@ -103,7 +106,7 @@ elif [[ $1 = "--github" ]] || [[ $1 = "-g" ]]; then
 
 # help
 elif [[ $1 = "--help" ]] || [[ $1 = "-h" ]]; then
-  echo batchful bash-v0.1.0-beta
+  echo batchful $ver
   echo Usage: ./batchful.sh [OPTION] [DIRECTORY] [EXTRAOPTION] [EXTRAOPTION] ...
   echo
   echo Options:
@@ -119,7 +122,10 @@ elif [[ $1 = "--help" ]] || [[ $1 = "-h" ]]; then
 
 # open GUI
 elif [[ $1 = "" ]]; then
-  echo placeholder GUI
+  zenity --info \
+  --title="batchful $ver" \
+  --width=350\
+  --text="Hello, and thanks for using batchful! \n \n This GUI option is currently in development. \n Run '$ ./batchful --help' from the command line for help." \
 
 else
   echo batchful: unrecognised option \'$1\'

@@ -2,7 +2,7 @@
 # batchful
 A simple and easy-to use directory organizer.
 
-No installation needed -- just run `batchful.sh` from terminal.
+No installation needed -- just run `batchful.sh`.
 
 ## Usage
 Run the file from terminal using `$ ./batchful.sh` with the desired organization method and directory.

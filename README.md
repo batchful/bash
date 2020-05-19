@@ -1,4 +1,5 @@
-#### [batch](https://github.com/3174N/batchful/tree/master/) / bash
+*Maintained by @SFR-git*
+
 # batchful
 A simple and easy-to use directory organizer.
 

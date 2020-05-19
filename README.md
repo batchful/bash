@@ -1,4 +1,4 @@
-*Maintained by @SFR-git*
+*Maintained by [@SFR-git](https://github.com/SFR-git)*
 
 # batchful
 A simple and easy-to use directory organizer.

@@ -1,5 +1,4 @@
 *Maintained by [@SFR-git](https://github.com/SFR-git)*
-
 # batchful
 A simple and easy-to use directory organizer.
 
@@ -12,13 +11,11 @@ Run the file without any parameters / from your file manager.
 
 ### Dependencies
 To run batchful, the following dependencies are needed:
-* `zenity` (necessary for GUI)
-  * for Debian-based distributions:
-  `$ sudo apt-get install zenity`
-  * for Arch-based distributions:
-  *[Install from the AUR](https://aur.archlinux.org/packages/zenity-git/)*
-  * using Snap:
-  `$ sudo snap install zenity`
+* `yad` (necessary for GUI)
+  * for Arch-based distributions: *[Install from the AUR](https://aur.archlinux.org/packages/yad-git/)*
+  * for Debian-based distributions: `sudo apt install yad`
+  * from [SourceForge](https://sourceforge.net/projects/yad-dialog/)
+  * from [GitHub](https://github.com/v1cont/yad)
 
 ### Configuration
 There are currently two implemented methods of organization *(more coming soon -- see below)*:

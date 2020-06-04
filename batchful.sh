@@ -9,7 +9,7 @@
 # preconfiguration
 
 ## version
-ver="bash-v0.2.0-beta"
+ver="bash-v0.2.0"
 
 ## forcing
 FORCED=0
@@ -98,7 +98,7 @@ elif [[ $1 = "--github" ]] || [[ $1 = "-g" ]]; then
   echo Made by 3174N with help from SFR-git
   read -r -p "Open GitHub repo? [Y/n] " response
     if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]] || [[ $response == "" ]]; then
-      xdg-open https://github.com/3174N/batchful/tree/bash
+      xdg-open https://github.com/batchful/batchful-bash
     elif [[ $response =~ ^([nN][oO]|[nN])$ ]]; then
       exit
     else
@@ -122,27 +122,26 @@ elif [[ $1 = "--help" ]] || [[ $1 = "-h" ]]; then
   echo
   echo Run without parameters or open from file manager to use GUI.
 
-# open GUI
+# GUI
 elif [[ $1 = "" ]]; then
-    zenity --question --title="batchful $ver" --text="batchful is a simple and easy-to-use file sorting program. \n \n To start sorting, click the 'Start' button.\n To cancel, click 'Cancel' " --ok-label="_Start" --cancel-label="_Cancel" --width=350
-    if [ "$?" = 1 ]; then exit
+    yad --question --title="batchful $ver" --text="\n<span font='24'><b>batchful</b></span>\n<span font='11.3'>Sort files with ease</span>\n" --button="Start":0 --button="Help":2 --button="GitHub":3 --button=gtk-cancel:1 --buttons-layout=center --justify=center --text-align=center --center
+    foo=$?
+    if [[ "$foo" -eq 1 ]]; then exit
+    elif [ "$foo" -eq 2 ]; then
+      echo "placeholder helpgui" && exit 0
+    elif [ "$foo" -eq 3 ]; then
+      xdg-open https://github.com/batchful/bash && exit 0
     fi
-    dir=`zenity --file-selection --title="Select a directory to sort" --directory  `
-    if [ "$?" = 1 ]; then exit
-    fi
-    optraw=`zenity --list --title="batchful $ver" --text="Which way would you like to sort your files?" --radiolist --column="" --column="Option" FALSE "By name -- Sorts the files in folders by their names, without extensions" FALSE "By extension -- Creates a directory for every used filetype and sorts accordingly" --width=600 --height=200  `
-    if [ "$?" = 1 ]; then exit
-    fi
-    if [[ $optraw == "By name -- Sorts the files in folders by their names, without extensions" ]]; then
-      opt="name"
-    elif [[ $optraw == "By extension -- Creates a directory for every used filetype and sorts accordingly" ]]; then
-      opt="extension"
-    fi
-    zenity --question --title="batchful $ver" --text="Directory '$dir' will be sorted by $opt. Continue?" --width=350 --ok-label="_Yes" --cancel-label="_No" --width=350
-    if [ "$?" = 1 ]; then exit
-    fi
+    dir=`yad --file-selection --title="Select a directory to sort" --directory  --center --width=800 --height=500`
+    if [ "$?" = 1 ]; then exit; fi
+    optraw=`yad --title="batchful $ver" --list --column="Select a method of sorting:" --width=300 --center "Sort by file name" "Sort by file extension" --button=gtk-cancel:1`
+    if [ "$optraw" == "" ]; then exit; fi
+    if [[ "$optraw" == "Sort by file name|" ]]; then opt="name"
+    elif [[ "$optraw" == "Sort by file extension|" ]]; then opt="extension"; fi
+    yad --question --center --title="batchful $ver" --text="Directory '<i>$dir</i>'\nwill be sorted by <b>file $opt</b>.\nContinue?" --width=250 --button=gtk-no:1 --button=gtk-yes:0 --buttons-layout=center
+    if [ "$?" = 1 ]; then exit; fi
     ./batchful.sh "--$opt" "$dir" -f
-    zenity --info --title="batchful $ver" --text="Folder sorted succesfully." --width=200
+    yad --info --center --text-align=center --title="batchful $ver" --text="Folder sorted succesfully." --width=200 --button="OK":0
 
 else
   echo batchful: unrecognised option \'$1\'

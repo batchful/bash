@@ -14,6 +14,7 @@ To run batchful, the following dependencies are needed:
 * `yad` (necessary for GUI)
   * for Arch-based distributions: *[Install from the AUR](https://aur.archlinux.org/packages/yad-git/)*
   * for Debian-based distributions: `sudo apt install yad`
+  * for Fedora/RedHat: `sudo dnf install yad`
   * from [SourceForge](https://sourceforge.net/projects/yad-dialog/)
   * from [GitHub](https://github.com/v1cont/yad)
 

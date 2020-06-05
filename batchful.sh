@@ -30,13 +30,17 @@ fi
           extless="${pathless%%.*}" # cut extension
           parless="./${extless%% (*)}"
           if [[ "$pathless" = "$extless" ]]; then # if file is extensionless
-            mkdir "batchful-bash-temp-$extless" # create temp folder
-            mv "$extless" ./"batchful-bash-temp-$extless"
+            loop=1
+            while true; do
+              [ -v "batchful-bash-temp-$loop" ] || mkdir "batchful-bash-temp-$loop" && break # create temporary folder
+              loop=$((loop+1))
+              done
+            mv "$extless" ./"batchful-bash-temp-$loop"
             if [[ ! -a "./$parless" ]]; then
               mkdir "$parless" # create directory if doesn't exist
             fi
-            mv ./"batchful-bash-temp-$extless"/"$extless" "$parless" # move extensionless directly
-            rmdir "batchful-bash-temp-$extless"
+            mv ./"batchful-bash-temp-$loop"/"$extless" "$parless" # move extensionless directly
+            rmdir "batchful-bash-temp-$loop"
             continue
           fi
           if [[ ! -a "./$parless" ]]; then
@@ -124,12 +128,10 @@ elif [[ $1 = "--help" ]] || [[ $1 = "-h" ]]; then
 
 # GUI
 elif [[ $1 = "" ]]; then
-    yad --question --title="batchful $ver" --text="\n<span font='24'><b>batchful</b></span>\n<span font='11.3'>Sort files with ease</span>\n" --button="Start":0 --button="Help":2 --button="GitHub":3 --button=gtk-cancel:1 --buttons-layout=center --justify=center --text-align=center --center
+    yad --question --title="batchful $ver" --text="\n<span font='24'><b>batchful</b></span>\n<span font='11.3'>Sort files with ease</span>\n" --button="Start":0 --button="GitHub":2 --button=gtk-cancel:1 --buttons-layout=center --justify=center --text-align=center --center
     foo=$?
     if [[ "$foo" -eq 1 ]]; then exit
     elif [ "$foo" -eq 2 ]; then
-      echo "placeholder helpgui" && exit 0
-    elif [ "$foo" -eq 3 ]; then
       xdg-open https://github.com/batchful/bash && exit 0
     fi
     dir=`yad --file-selection --title="Select a directory to sort" --directory  --center --width=800 --height=500`

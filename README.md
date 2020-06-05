@@ -6,13 +6,12 @@ No installation needed -- just run `batchful.sh`.
 
 ## Usage
 Run the file from terminal using `$ ./batchful.sh` with the desired organization method and directory.
-**OR**
-Run the file without any parameters / from your file manager.
+**OR** Run the file without any parameters / from your file manager.
 
 ### Dependencies
 To run batchful, the following dependencies are needed:
 * `yad` (necessary for GUI)
-  * for Arch-based distributions: *[Install from the AUR](https://aur.archlinux.org/packages/yad-git/)*
+  * for Arch-based distributions: [`yad-git`](https://aur.archlinux.org/packages/yad-git/)<sup>AUR</sup>
   * for Debian-based distributions: `sudo apt install yad`
   * for Fedora/RedHat: `sudo dnf install yad`
   * from [SourceForge](https://sourceforge.net/projects/yad-dialog/)

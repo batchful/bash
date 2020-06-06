@@ -7,15 +7,14 @@
 #  |_.__/  \__,_| \__|\___||_| |_||_|   \__,_||_|
 
 # preconfiguration
-
 ## version
 ver="bash-v0.2.0"
-
 ## forcing
 FORCED=0
-if [[ $3 == "--force" ]] || [[ $3 == "-f" ]]; then FORCED=1
+if [[ $@ = *"--force"* ]] || [[ $4 = *"-f"* ]]; then FORCED=1
 fi
-
+## cut regex
+regex="${3##"phrase="}" # cut prefix
 
 # by file name
 if [[ $1 = "--name" ]] || [[ $1 = "-n" ]]; then
@@ -57,22 +56,20 @@ fi
       echo
       echo Invalid response \'$response\' -- Aborting...
     fi
-else
-  echo batchful: invalid directory operand \'$2\'
-  echo Try \'./batchful.sh --help\' for more information.
+  else
+    echo batchful: invalid directory operand \'$2\'
+    echo Try \'./batchful.sh --help\' for more information.
 fi
 
 # by file extension
 elif [[ $1 = "--extension" ]] || [[ $1 = "-e" ]]; then
   if [ -d "$2" ]; then # directory operand validity check
-if [[ $FORCED -eq 0 ]]; then read -r -p "'$2' will be sorted by file extension. Continue? [Y/n] " response
-fi
+    if [[ $FORCED -eq 0 ]]; then read -r -p "'$2' will be sorted by file extension. Continue? [Y/n] " response; fi
       if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]] || [[ $response == "" ]] || [[ $FORCED -eq 1 ]]; then
         cd "$2"
         for extful in "$2"/*.*; do # skip extensionless
           [ ! -d "$extful" ] || continue # skip directories
-            if [[ ! -a "./${extful#*.}" ]]; then mkdir "${extful#*.}" # create directory if doesn't exist
-            fi
+            if [[ ! -a "./${extful#*.}" ]]; then mkdir "${extful#*.}"; fi # create directory if doesn't exist
             mv "$extful" ./"${extful#*.}" # sort by extension
         done
         if [[ ! -d "'$2'/no-extension" ]]; then mkdir no-extension # create extless directory if doesn't exist
@@ -89,12 +86,44 @@ fi
         echo
         echo Invalid response \'$response\' -- Aborting...
       fi
-else
-  echo batchful: invalid directory operand \'$2\'
-  echo Try \'./batchful.sh --help\' for more information.
+  else
+    echo batchful: invalid directory operand \'$2\'
+    echo Try \'./batchful.sh --help\' for more information.
 fi
 
-# phrase
+# by phrase
+elif [[ $1 = "--phrase" ]] || [[ $1 = "-p" ]]; then
+  if [[ $3 = "phrase="* ]] && [[ ! $3 = "phrase=" ]]; then
+    if [ -d "$2" ]; then # directory operand validity check
+      if [[ $FORCED -eq 0 ]]; then read -r -p "All files in '$2' containing '$regex' in their name will be sorted. Continue? [Y/n] " response; fi
+        if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]] || [[ $response == "" ]] || [[ $FORCED -eq 1 ]]; then
+          cd "$2"
+          matches=("$2"/*"$regex"*) # create array of files
+          if [[ ! -f "${matches[0]}" ]]; then # if array contains invalid files
+            echo
+            echo Could not find any files containing \'$regex\' -- No changes were made.
+            echo Aborting...; exit; fi
+          if [[ ! -a "$regex" ]]; then mkdir "$regex"; fi # create directory if doesn't exist
+          for file in "${matches[@]}"; do
+            mv "$file" "./$regex"
+          done
+          echo
+          echo Folder sorted succesfully.
+        elif [[ $response =~ ^([nN][oO]|[nN])$ ]]; then
+          echo Aborting...
+        else
+          echo
+          echo Invalid response \'$response\' -- Aborting...
+        fi
+    else
+      echo batchful: invalid directory operand \'$2\'
+      echo Try \'./batchful.sh --help\' for more information.
+    fi
+  else
+    echo Invalid phrase operand \'$3\' -- Aborting...
+    echo Try \'./batchful.sh --help\' for more information.
+fi
+
 
 # link to GitHub
 elif [[ $1 = "--github" ]] || [[ $1 = "-g" ]]; then
@@ -113,13 +142,17 @@ elif [[ $1 = "--github" ]] || [[ $1 = "-g" ]]; then
 # help
 elif [[ $1 = "--help" ]] || [[ $1 = "-h" ]]; then
   echo batchful $ver
-  echo Usage: ./batchful.sh [OPTION] [DIRECTORY] [EXTRAOPTION] [EXTRAOPTION] ...
+  echo Usage: ./batchful.sh [OPTION] [DIRECTORY] [CONTEXTUAL] [EXTRAOPTION] [EXTRAOPTION] ...
   echo
   echo Options:
   echo \ \ \ [--name, -n] Sort by file name
   echo \ \ \ [--extension, -e] Sort by file extension
+  echo \ \ \ [--phrase, -p] Sort files with certain phrase
   echo \ \ \ [--github, -g] Link to GitHub
   echo \ \ \ [--help, -h] Prints this help
+  echo
+  echo Context-specific options:
+  echo \ \ \ [phrase=\"foo\"] Desired regex to search for
   echo
   echo Extra options:
   echo \ \ \ [--force, -f] Skip confirmation prompts

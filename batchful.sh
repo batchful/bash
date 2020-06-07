@@ -8,19 +8,22 @@
 
 # preconfiguration
 ## version
-ver="bash-v0.2.0"
+ver="v0.3.0"
 ## forcing
 FORCED=0
-if [[ $@ = *"--force"* ]] || [[ $4 = *"-f"* ]]; then FORCED=1
-fi
+if [[ $@ = *"--force"* ]] || [[ $@ = *"-f"* ]]; then FORCED=1; fi
+## GUI messages
+GUI=0
+if [[ $@ = *"--show-gui-msgs"* ]]; then GUI=1; fi
 ## cut regex
 regex="${3##"phrase="}" # cut prefix
+## GUI
+phrase=""
 
 # by file name
 if [[ $1 = "--name" ]] || [[ $1 = "-n" ]]; then
 if [ -d "$2" ]; then # directory operand validity check
-if [[ $FORCED -eq 0 ]]; then read -r -p "'$2' will be sorted by file name. Continue? [Y/n] " response
-fi
+if [[ $FORCED -eq 0 ]]; then read -r -p "'$2' will be sorted by file name. Continue? [Y/n] " response; fi
     if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]] || [[ $response == "" ]] || [[ $FORCED -eq 1 ]]; then
       cd "$2"
       for file in "$2"/*; do
@@ -35,20 +38,17 @@ fi
               loop=$((loop+1))
               done
             mv "$extless" ./"batchful-bash-temp-$loop"
-            if [[ ! -a "./$parless" ]]; then
-              mkdir "$parless" # create directory if doesn't exist
-            fi
+            if [[ ! -a "./$parless" ]]; then mkdir "$parless"; fi # create directory if doesn't exist
             mv ./"batchful-bash-temp-$loop"/"$extless" "$parless" # move extensionless directly
             rmdir "batchful-bash-temp-$loop"
             continue
           fi
-          if [[ ! -a "./$parless" ]]; then
-            mkdir "$parless" # create directory if doesn't exist
-          fi
+          if [[ ! -a "./$parless" ]]; then mkdir "$parless"; fi
           mv "$file" ./"$parless" # sort by name
       done
       echo
       echo Folder sorted succesfully.
+      if [[ $GUI -eq 1 ]]; then yad --info --center --text-align=center --title="batchful $ver" --text="Folder sorted succesfully." --width=200 --button="OK":0; fi
 
     elif [[ $response =~ ^([nN][oO]|[nN])$ ]]; then
       echo Aborting...
@@ -72,14 +72,14 @@ elif [[ $1 = "--extension" ]] || [[ $1 = "-e" ]]; then
             if [[ ! -a "./${extful#*.}" ]]; then mkdir "${extful#*.}"; fi # create directory if doesn't exist
             mv "$extful" ./"${extful#*.}" # sort by extension
         done
-        if [[ ! -d "'$2'/no-extension" ]]; then mkdir no-extension # create extless directory if doesn't exist
-        fi
+        if [[ ! -d "'$2'/no-extension" ]]; then mkdir no-extension; fi # create extless directory if doesn't exist
         for extless in "$2"/*; do
           [ ! -d "$extless" ] || continue # skip directories
             mv "$extless" ./no-extension # sort extensionless
         done
         echo
         echo Folder sorted succesfully.
+        if [[ $GUI -eq 1 ]]; then yad --info --center --text-align=center --title="batchful $ver" --text="Folder sorted succesfully." --width=200 --button="OK":0; fi
       elif [[ $response =~ ^([nN][oO]|[nN])$ ]]; then
         echo Aborting...
       else
@@ -102,13 +102,15 @@ elif [[ $1 = "--phrase" ]] || [[ $1 = "-p" ]]; then
           if [[ ! -f "${matches[0]}" ]]; then # if array contains invalid files
             echo
             echo Could not find any files containing \'$regex\' -- No changes were made.
-            echo Aborting...; exit; fi
+            echo Aborting...
+            if [[ $GUI -eq 1 ]]; then yad --info --center --text-align=center --title="ERROR" --text="Could not sort folder -- invalid phrase" --width=200 --button="OK":0; fi; exit; fi
           if [[ ! -a "$regex" ]]; then mkdir "$regex"; fi # create directory if doesn't exist
           for file in "${matches[@]}"; do
             mv "$file" "./$regex"
           done
           echo
           echo Folder sorted succesfully.
+          if [[ $GUI -eq 1 ]]; then yad --info --center --text-align=center --title="batchful $ver" --text="Folder sorted succesfully." --width=200 --button="OK":0; fi
         elif [[ $response =~ ^([nN][oO]|[nN])$ ]]; then
           echo Aborting...
         else
@@ -164,19 +166,24 @@ elif [[ $1 = "" ]]; then
     yad --question --title="batchful $ver" --text="\n<span font='24'><b>batchful</b></span>\n<span font='11.3'>Sort files with ease</span>\n" --button="Start":0 --button="GitHub":2 --button=gtk-cancel:1 --buttons-layout=center --justify=center --text-align=center --center
     foo=$?
     if [[ "$foo" -eq 1 ]]; then exit
-    elif [ "$foo" -eq 2 ]; then
-      xdg-open https://github.com/batchful/bash && exit 0
-    fi
+    elif [ "$foo" -eq 2 ]; then xdg-open https://github.com/batchful/bash && exit 0; fi
     dir=`yad --file-selection --title="Select a directory to sort" --directory  --center --width=800 --height=500`
     if [ "$?" = 1 ]; then exit; fi
-    optraw=`yad --title="batchful $ver" --list --column="Select a method of sorting:" --width=300 --center "Sort by file name" "Sort by file extension" --button=gtk-cancel:1`
+    optraw=`yad --title="batchful $ver" --list --column="Select a method of sorting:" --width=300 --height=200 --center "Sort by file name" "Sort by file extension" "Sort files by phrase" --button=gtk-cancel:1`
     if [ "$optraw" == "" ]; then exit; fi
-    if [[ "$optraw" == "Sort by file name|" ]]; then opt="name"
-    elif [[ "$optraw" == "Sort by file extension|" ]]; then opt="extension"; fi
-    yad --question --center --title="batchful $ver" --text="Directory '<i>$dir</i>'\nwill be sorted by <b>file $opt</b>.\nContinue?" --width=250 --button=gtk-no:1 --button=gtk-yes:0 --buttons-layout=center
+    if [[ "$optraw" == "Sort files by phrase|" ]]; then
+      opt="phrase"
+      regexraw=`yad --form --title="batchful $ver" --center --button=gtk-cancel:1 --field="Search for:":0`
+      if [[ $? -eq 1 ]]; then exit; fi
+      regex=${regexraw%"|"}
+      phrase="phrase=$regex"
+      yad --question --center --title="batchful $ver" --text="All files in '<i>$dir</i>'\ncontaining <b>$regex</b> in their name will be sorted. Continue?" --width=250 --button=gtk-no:1 --button=gtk-yes:0 --buttons-layout=center
+    else
+      if [[ "$optraw" == "Sort by file name|" ]]; then opt="name"
+      elif [[ "$optraw" == "Sort by file extension|" ]]; then opt="extension"; fi
+      yad --question --center --title="batchful $ver" --text="Directory '<i>$dir</i>'\nwill be sorted by <b>file $opt</b>.\nContinue?" --width=250 --button=gtk-no:1 --button=gtk-yes:0 --buttons-layout=center; fi
     if [ "$?" = 1 ]; then exit; fi
-    ./batchful.sh "--$opt" "$dir" -f
-    yad --info --center --text-align=center --title="batchful $ver" --text="Folder sorted succesfully." --width=200 --button="OK":0
+    ./batchful.sh "--$opt" "$dir" "$phrase" -f --show-gui-msgs
 
 else
   echo batchful: unrecognised option \'$1\'

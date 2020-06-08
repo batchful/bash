@@ -40,7 +40,7 @@ When filing a bug report, please fill out the issue template provided. In short,
 > * Steps to reproduce
 > * Expected behaviour
 > * Screenshots
-> * Environment details (*e.g* Debian 10.0, GNOME, Radeon RX550)
+> * Environment details (*e.g.* Debian 10.0, GNOME, Radeon RX550)
 > * Additional context
 
 # How to suggest a feature or enhancement

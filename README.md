@@ -1,4 +1,6 @@
 *Maintained by [@SFR-git](https://github.com/SFR-git)*
+
+[![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/F1F61SQUE)
 # batchful
 A simple and easy-to use directory organiser.
 

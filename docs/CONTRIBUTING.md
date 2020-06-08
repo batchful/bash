@@ -47,7 +47,7 @@ When filing a bug report, please fill out the issue template provided. In short,
 
 If you find yourself wishing for a feature that doesn't exist in batchful, you are probably not alone. There are bound to be others out there with similar needs. Open an issue which describes the feature you would like to see, why you need it, and how it should work.
 
-**DISCLAIMER:** Not all feature requests will be added to the project. Some of them simply don't fit our view of what batchful should have, and we don't want it to feel bloated and heavy. Being an MIT-licensed open-source project, you're free to fork it and add whichever additions suit your needs. 
+**DISCLAIMER:** Not all feature requests will be added to the project. Some of them simply don't fit our view of what batchful should have, and we don't want it to feel bloated and heavy. Being an GPLv3-licensed open-source project, you're free to fork it and add whichever additions suit your needs. 
 
 When filing a feature request, please fill out the issue template provided.
 # Code review process

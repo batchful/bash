@@ -15,6 +15,8 @@ if [[ $@ = *"--force"* ]] || [[ $@ = *"-f"* ]]; then FORCED=1; fi
 ## GUI messages
 GUI=0
 if [[ $@ = *"--show-gui-msgs"* ]]; then GUI=1; fi
+## search through subfolders
+if [[ $@ = *"--subfolders"* ]] || [[ $@ = *"-s"* ]]; then SUB=1; fi
 ## cut regex
 regex="${3##"phrase="}" # cut prefix
 ## GUI
